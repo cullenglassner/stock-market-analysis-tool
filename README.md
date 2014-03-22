@@ -22,3 +22,7 @@ Hover over a datapoint to get exact information on the chart.
 
 Known Bugs:
 RSI throws erradic errors. Cause unknown.
+
+
+Sample Charts:
+Available in the "Example Charts" directory.
