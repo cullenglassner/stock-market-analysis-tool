@@ -1,0 +1,16 @@
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharpStockMarketAnalysis.exe.config
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharpStockMarketAnalysis.XML
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharpStockMarketAnalysis.exe
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharpStockMarketAnalysis.pdb
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Charting.dll
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Core.dll
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Data.dll
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\MSDN.FSharpChart.dll
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Charting.pdb
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Charting.xml
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Data.pdb
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Data.xml
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\FSharp.Core.xml
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\bin\Debug\MSDN.FSharpChart.pdb
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\obj\Debug\FSharpStockMarketAnalysis.exe
+C:\Users\Cullen\Desktop\FSharpStockMarketAnalysis\FSharpStockMarketAnalysis\obj\Debug\FSharpStockMarketAnalysis.pdb
