@@ -9,35 +9,60 @@ open FSharp.Data.CsvExtensions
 open FSharp.Charting
 open System.Windows.Forms.DataVisualization.Charting
 
-// URL of a service that generates stock data
-[<Literal>]
-let url = "http://ichart.finance.yahoo.com/table.csv?s="
-let path (stock:String) =  __SOURCE_DIRECTORY__ + "/../data/" + stock + ".csv"
+
+
+
+
+
+
+
 
 // To load multiple stocks add a ticker to the list, ie [ "AAPL"; "MSFT"; "GOOG"; ... ]
 //let mutable symbolList = new List<string>()
-let symbolList = ["AAPL"]
+let symbolList = ["MSFT"]
 
 
+
+
+
+
+
+
+
+(******                    HELPER FUNCTIONS & GLOBAL VARIABLES :
+ ******                    Some helper functions and global variables for main library functions.
+ ******)
+// URL of a service that generates stock data
+[<Literal>]
+let url = "http://ichart.finance.yahoo.com/table.csv?s="
+// Used for charting, just a global date.
+let recentEndDate = DateTime.Now.AddMonths(-5)
+
+
+// Path to downloaded stock data
+let path (stock:String) =  __SOURCE_DIRECTORY__ + "/../data/" + stock + ".csv"
 // Only returning 240 days of stock data due to memory limits when looking
 // at large data sets. This downloads and saves the data.
 let downloadStockPrices stock  =
     let (stockUrl:String) = url + stock
     CsvFile.Load(stockUrl).Truncate(240).Save(path stock)
-
+// Download the stock data
 for stock in symbolList do
     downloadStockPrices stock
-
 // Loads the downloaded file.
 let getStockPrices stock = CsvFile.Load(path stock)
 
-// Used for charting.
-let recentEndDate = DateTime.Now.AddMonths(-5)
 
 
 
 
-(*                    Basic Stock Retrievals                    *)
+
+
+
+
+(******                    STOCK REVRIEVAL :
+ ******                    Gets current stock prices in two different formats.
+ ******)
 // Run C# loops in F# : "for ... do ... yield ..."
 // Use F# lambda functions : "(fun <params> -> <expr>)"
 let recentPrices (symbol:String) = 
@@ -54,6 +79,11 @@ let recentPricesStock (symbol:String) =
 
 
 
+
+
+(******                    MOVING AVERAGE CALCULATIONS :
+ ******                    Calculates the moving average over a range.
+ ******)
 (*                    Moving Average Calculations                    *)
 // @params:
 //      symbol      stock symbol
@@ -78,7 +108,17 @@ let movingAvg (symbol:String) (range:float) =
 
 
 
-(*                    RSI Calculations                    *)
+
+
+
+(******                    RSI CALCULATIONS :
+ ******                    Calculates the RSI of a stock using a mutable list.
+ ******)
+// Mutable lists requires for recursion using imparative programming techniques
+let mutable gainsList = new List<float>()
+let mutable lossList  = new List<float>()
+
+// Needed to give the first average gain when no previous data is available (recusrive case)
 let firstAvgGain (symbol:String) (date:DateTime) : float =  
     let data = (getStockPrices symbol).Filter(fun row -> row?Date.AsDateTime() > (date.AddDays(-21.0)) && row?Date.AsDateTime() < date )
     let range = [ for row in data.Rows do
@@ -87,10 +127,19 @@ let firstAvgGain (symbol:String) (date:DateTime) : float =
                     if range.Item(i) > range.Item(i - 1) then
                         yield range.Item(i) - range.Item(i - 1) ]
     List.average gains
-let rec avgGain (symbol:String) (date:DateTime) : float =
-    let currGain = firstAvgGain symbol date
-    ( avgGain symbol (date.AddDays(-1.0)) * 13.0 + currGain ) / 14.0
+// Gets all other gains to calculate the RS
+let rec avgGain (symbol:String) (date:DateTime) (range:float) : float =
+    let mutable tmp = 0.0
+    if range = 0.0 then
+        gainsList.Clear()
+        tmp <- firstAvgGain symbol date
+    else
+        let currGain = firstAvgGain symbol date
+        tmp <- ( ( avgGain symbol (date.AddDays(-1.0)) (range - 1.0) ) * 13.0 + currGain ) / 14.0
+    gainsList.Add(tmp)
+    tmp
 
+// Needed to give the first average loss when no previous data is available (recusrive case)
 let firstAvgLoss (symbol:String) (date:DateTime) : float =  
     let data = (getStockPrices symbol).Filter(fun row -> row?Date.AsDateTime() > (date.AddDays(-21.0)) && row?Date.AsDateTime() < date )
     let range = [ for row in data.Rows do
@@ -99,33 +148,26 @@ let firstAvgLoss (symbol:String) (date:DateTime) : float =
                     if range.Item(i) < range.Item(i - 1) then
                         yield range.Item(i) - range.Item(i - 1) ]
     List.average loss
-let rec avgLoss (symbol:String) (date:DateTime) : float =
-    let currLoss = firstAvgLoss symbol date
-    ( avgLoss symbol (date.AddDays(-1.0)) * 13.0 + currLoss ) / 14.0
+// Gets all other losses to calculate the RS
+let rec avgLoss (symbol:String) (date:DateTime) (range:float) : float =
+    let mutable tmp = 0.0
+    if range = 0.0 then
+        lossList.Clear()
+        tmp <- firstAvgLoss symbol date
+    else
+        let currLoss = firstAvgLoss symbol date
+        tmp <- ( ( avgLoss symbol (date.AddDays(-1.0)) (range - 1.0) ) * 13.0 + currLoss ) / 14.0
+    lossList.Add(tmp)
+    tmp
 
 
-let RS (symbol:String) (date:DateTime) : float =
-    avgGain symbol date / avgLoss symbol date
+// Relative Strenght of the stock
+let RS (symbol:String) (date:DateTime) (range:float) =
+    avgGain symbol date range / avgLoss symbol date range
 
+// Relative Strength Index of the stock.
+// Magic number 14 is statistically proven to work.
+// EQUATION REFERENCE : http://stockcharts.com/help/doku.php?id=chart_school:technical_indicators:relative_strength_in
 let RSI (symbol:String) (date:DateTime) : float = 
-    100.0 - ( 100.0 / ( 1.0 + RS symbol date ))
-
-
-
-
-
-
-
-
-
-//[<EntryPoint>]
-//let main argv = 
-//    if argv.Length < 1 then
-//        printfn "%A\n" argv
-//        printfn "usage: [<stock>; <stock; ...]"
-//    symbolList.AddRange(argv)
-//    printfn "LIST: %A" symbolList
-//
-//    System.Console.ReadKey() |> ignore
-//    0 // return an integer exit code
+    100.0 - ( 100.0 / ( 1.0 + RS symbol date 14.0 ))
 
